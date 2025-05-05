@@ -1,0 +1,5 @@
+
+export class NotificationController {
+  constructor() {
+  }
+}
