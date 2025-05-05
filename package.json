@@ -1,0 +1,33 @@
+{
+  "name": "general-services-hub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@aws-sdk/util-dynamodb": "^3.799.0",
+    "aws-lambda": "^1.0.7",
+    "body-parser": "^2.2.0",
+    "bson": "^6.10.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "logform": "^2.7.0",
+    "reflect-metadata": "^0.2.2",
+    "serverless-http": "^3.2.0",
+    "triple-beam": "^1.4.1",
+    "tsyringe": "^4.10.0",
+    "winston": "^3.17.0"
+  }
+}

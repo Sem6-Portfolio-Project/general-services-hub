@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "lib": [
+      "es6"
+    ],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "src",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "outDir": "dist/lib",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "exclude": [
+    "dist",
+    "node_modules",
+  ]
+}
