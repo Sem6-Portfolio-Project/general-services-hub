@@ -3,7 +3,7 @@ import { Express } from "express";
 import { container } from "tsyringe";
 import serverless from "serverless-http";
 import { getApp } from "../../lib/express-app.js";
-import { NotificationRouter } from "../../routes/notification-router";
+import { GeneralServiceRouter } from "../../routes/general-service-router";
 import {
     APIGatewayProxyEvent,
     APIGatewayProxyHandler,
@@ -14,7 +14,7 @@ import {
 
 const app: Express = getApp();
 
-app.use('/notification', container.resolve(NotificationRouter).getRoutes());
+app.use('/general', container.resolve(GeneralServiceRouter).getRoutes());
 
 const _handler: serverless.Handler = serverless(app);
 

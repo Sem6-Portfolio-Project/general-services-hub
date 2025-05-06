@@ -1,12 +1,15 @@
 import { BaseRouter } from "./base-router.js";
 import { NotificationController } from "../controllers/notification-controller.js";
+import { LostFoundItemController } from "../controllers/lostfound-item-controller.js";
 import { injectable } from "tsyringe";
 
+
 @injectable()
-export class NotificationRouter extends BaseRouter {
+export class GeneralServiceRouter extends BaseRouter {
 
   constructor(
-    private notificationController: NotificationController
+    private notificationController: NotificationController,
+    private lostFoundItemController: LostFoundItemController
   ) {
     super();
   }
