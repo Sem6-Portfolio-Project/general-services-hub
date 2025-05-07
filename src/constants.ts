@@ -9,3 +9,13 @@ export const NOTIFICATION_TYPES = {
   SYSTEM: { value: 1, name: 'System notifications' },
   LOST_FOUND: { value: 2, name: 'Lost & found notifications' }
 }
+
+export const TABLES = {
+  WS_CONNECTIONS: "NotificationsWSConnections",
+  NOTIFICATIONS: "Notifications",
+}
+
+export const CONNECTION_TYPES = {
+  BUS: 1,
+  PASSENGER: 2,
+}

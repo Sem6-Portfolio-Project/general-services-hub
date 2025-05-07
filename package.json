@@ -10,12 +10,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.804.0",
+    "@aws-sdk/lib-dynamodb": "^3.804.0",
     "@aws-sdk/util-dynamodb": "^3.799.0",
     "aws-lambda": "^1.0.7",
     "body-parser": "^2.2.0",
