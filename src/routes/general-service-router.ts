@@ -15,6 +15,6 @@ export class GeneralServiceRouter extends BaseRouter {
   }
 
   protected initRoutes = (): void => {
-
+    this.router.post('/register-device', this.notificationController.registerDevice);
   }
 }

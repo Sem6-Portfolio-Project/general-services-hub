@@ -11,7 +11,7 @@ export const NOTIFICATION_TYPES = {
 }
 
 export const TABLES = {
-  WS_CONNECTIONS: "NotificationsWSConnections",
+  APPLICATION_ENDPOINTS: "ApplicationEnpoints",
   NOTIFICATIONS: "Notifications",
 }
 
@@ -19,3 +19,5 @@ export const CONNECTION_TYPES = {
   BUS: 1,
   PASSENGER: 2,
 }
+
+export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN;

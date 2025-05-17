@@ -1,9 +1,23 @@
 import { AwsService } from "./aws-service";
 import {
+  DeleteItemCommand,
+  DeleteItemCommandOutput,
   DynamoDBClient,
+  GetItemCommand,
+  GetItemCommandOutput,
+  PutItemCommand,
+  PutItemCommandOutput,
+  QueryCommand,
+  QueryCommandOutput,
+  ReturnValue,
+  ScanCommand,
+  ScanCommandOutput,
+  UpdateItemCommand,
+  UpdateItemCommandOutput,
 } from "@aws-sdk/client-dynamodb";
 import {
-  DynamoDBDocumentClient
+  DynamoDBDocumentClient,
+  NativeAttributeValue,
 } from "@aws-sdk/lib-dynamodb";
 
 export class DynamodbService extends AwsService {
@@ -27,9 +41,9 @@ export class DynamodbService extends AwsService {
   put = (
     tableName: string,
     item: Record<string, NativeAttributeValue>
-  ): Promise<PutCommandOutput> => {
+  ): Promise<PutItemCommandOutput> => {
     return this.executeCommand(
-      new PutCommand({
+      new PutItemCommand({
         Item: item,
         TableName: tableName
       }),

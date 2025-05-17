@@ -5,7 +5,12 @@ export interface INotification {
   type: number
 }
 
-export interface INotificationEvent extends INotification{
+export interface INotificationEvent extends INotification {
   receivers?: string[],
   receiverType?: number
+}
+
+export interface IDeviceRegisterReq {
+  email: string,
+  deviceToken: string,
 }

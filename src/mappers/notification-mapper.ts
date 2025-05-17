@@ -1,4 +1,5 @@
-import { INotificationEvent } from "../types/notification";
+import { marshall, NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
+import { IDeviceRegisterReq, INotificationEvent } from "../types/notification";
 
 export const intoToDDB = (data: INotificationEvent) => {
   return {
@@ -10,3 +11,26 @@ export const intoToDDB = (data: INotificationEvent) => {
     receiver_type: data?.receiverType
   }
 }
+
+export const getddbKeyofEndpoints = (email: string) => {
+  return {
+    email: marshall(email)
+  }
+};
+
+export const getNotificationData = (record: Record<string, NativeAttributeValue>) => {
+  const unmarshalledRecord = unmarshall(record);
+  return {
+    email: unmarshalledRecord.email,
+    deviceToken: unmarshalledRecord.device_token,
+    endpointArn: unmarshalledRecord.endpoint_arn
+  };
+};
+
+export const notificationDataToddb = (data: any) => {
+  return {
+    email: data.email,
+    device_token: data.deviceToken,
+    endpoint_arn: data.endpointArn
+  };
+};
