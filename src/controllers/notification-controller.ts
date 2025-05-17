@@ -5,7 +5,7 @@ import {
 import { 
   createLogger,
   CustomLogger } from "../lib/logger";
-import { TABLES } from "../constants";
+import { SNS_TOPICS, TABLES } from "../constants";
 import { DynamodbService } from "../services/dynamodb-service";
 import { 
   getddbKeyofEndpoints, 
@@ -62,35 +62,12 @@ export class NotificationController {
   }
 
   /**
-   * create device endpoint in the SNS 
+   * register device endpoint in the SNS 
    * @param deviceToken 
    */
   registerDevice = async(reqData: IDeviceRegisterReq) => {
     const {email, deviceToken} = reqData;
     logger.debug('Invoked registerDevice with reqData: %s', reqData);
-
-    const createAndSaveEndpoint = async() => {
-      logger.debug('Creating application endpoint with deviceToken: %s', deviceToken);
-
-      try {
-        const newplatformEndpointData = await this.snsService.createApplicationEndpoint(deviceToken);
-
-        if(newplatformEndpointData?.EndpointArn) {
-          logger.debug('Saving application endpoint to ddbTable: %s', TABLES.APPLICATION_ENDPOINTS);
-
-          await this.dynamodbService.put(
-            TABLES.APPLICATION_ENDPOINTS,
-            notificationDataToddb({
-              email,
-              deviceToken,
-              endpointArn: newplatformEndpointData.EndpointArn
-            })
-          );
-        }
-      } catch (e) {
-        logger.error('Error while creating and saving application endpoint; error: %o', e);
-      }
-    }
 
     try {
       const existingddbData = await this.dynamodbService.getItem(
@@ -113,23 +90,101 @@ export class NotificationController {
               logger.error('Error while deleting the application endpoint; error: %s', e);
             }
             
-            await createAndSaveEndpoint();
+            await this.createAndSaveEndpoint(reqData);
           }
         } catch (e: any) {
           if (e.code === 'NotFoundException') {
             logger.error('Endpoint does not exist. error: %s', e);
 
-            await createAndSaveEndpoint();
+            await this.createAndSaveEndpoint(reqData);
           } else {
             logger.error('Error while getting endpointAttributes. error: %s', e);
           }
         }
       } else {
         logger.info('No existing endpoint, creating new endpoint...');
-        await createAndSaveEndpoint();
+        await this.createAndSaveEndpoint(reqData);
       }
     } catch (e) {
       logger.error('Unexpected error during device registration: %o', e);
+    }
+  }
+
+  /**
+   * create endpoint and save it to the ddb
+   * @param reqData 
+   */
+  createAndSaveEndpoint = async(reqData: IDeviceRegisterReq) => {
+    const {email, deviceToken} = reqData;
+    logger.debug('Creating application endpoint with deviceToken: %s', deviceToken);
+
+    try {
+      const newplatformEndpointData = await this.snsService.createApplicationEndpoint(deviceToken);
+
+      if(newplatformEndpointData?.EndpointArn) {
+        logger.debug('Saving application endpoint to ddbTable: %s', TABLES.APPLICATION_ENDPOINTS);
+
+        const subscriptionArns = await this.subscribSNSTopics(newplatformEndpointData.EndpointArn);
+
+        if (subscriptionArns?.length == 2) {
+          await this.dynamodbService.put(
+            TABLES.APPLICATION_ENDPOINTS,
+            notificationDataToddb({
+              email,
+              deviceToken,
+              endpointArn: newplatformEndpointData.EndpointArn,
+              sysSubscriptionArn: subscriptionArns[0],
+              lostItemSubscriptionArn: subscriptionArns[1]
+            })
+          );
+        }
+      }
+    } catch (e) {
+      logger.error('Error while creating and saving application endpoint; error: %o', e);
+    }
+  }
+
+  /**
+   * subscribing to the sns topics
+   * @param endpointArn 
+   */
+  subscribSNSTopics = async(endpointArn: string) => {
+    logger.debug('Invoking the subscribSNSTopics with endpointArn: %s', endpointArn);
+
+    try {
+      logger.debug('Subscribing the topic : %s', SNS_TOPICS.SYSTEM.name);
+      const sysSubscriptionData = await this.snsService.subscribeSNSTopic(
+        SNS_TOPICS.SYSTEM.arn ?? '',
+        endpointArn,
+      );
+
+      logger.debug('Subscribing the topic : %s', SNS_TOPICS.LOST_ITEMS.name);
+      const lostItemSubscriptionData = await this.snsService.subscribeSNSTopic(
+        SNS_TOPICS.LOST_ITEMS.arn ?? '',
+        endpointArn,
+      );
+
+      logger.debug('Successfully subscribed the topics');
+      return [sysSubscriptionData.SubscriptionArn, lostItemSubscriptionData.SubscriptionArn]
+    } catch (e) {
+      logger.error('Error while subscribing the topics; error: %o', e);
+    }
+  }
+
+  /**
+   * unsubscribe topics
+   * @param subscriptionArns 
+   */
+  unsubscribeTopics = async(subscriptionArns: string[]) => {
+    logger.debug('Invoking the unsubscribSNSTopics');
+
+    try {
+      for(const arn of subscriptionArns) {
+        await this.snsService.unsubscribeSNSTopic(arn);
+        logger.debug('Successfully unsubscribSNSTopic: %s', arn);
+      };
+    } catch (e) {
+      logger.error('Error while unsubscribing subscriptionArns; %o', e);
     }
   }
 }

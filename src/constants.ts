@@ -21,3 +21,14 @@ export const CONNECTION_TYPES = {
 }
 
 export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN;
+
+export const SNS_TOPICS = {
+  SYSTEM: {
+    name: 'SystemNotifications',
+    arn: process.env.SYS_NOTIFI_TOPIC_ARN
+  },
+  LOST_ITEMS: {
+    name: 'LostItmesNotifications',
+    arn: process.env.LOSTITEM_TOPIC_ARN
+  }
+}

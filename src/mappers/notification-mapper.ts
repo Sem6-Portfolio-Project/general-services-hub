@@ -23,7 +23,9 @@ export const getNotificationData = (record: Record<string, NativeAttributeValue>
   return {
     email: unmarshalledRecord.email,
     deviceToken: unmarshalledRecord.device_token,
-    endpointArn: unmarshalledRecord.endpoint_arn
+    endpointArn: unmarshalledRecord.endpoint_arn,
+    sysSubscriptionArn: unmarshalledRecord.sys_subscription_arn,
+    lostItemSubscriptionArn: unmarshalledRecord.lost_item_subscription_arn
   };
 };
 
@@ -31,6 +33,8 @@ export const notificationDataToddb = (data: any) => {
   return {
     email: data.email,
     device_token: data.deviceToken,
-    endpoint_arn: data.endpointArn
+    endpoint_arn: data.endpointArn,
+    sys_subscription_arn: data.sysSubscriptionArn,
+    lost_item_subscription_arn: data.lostItemSubscriptionArn,
   };
 };

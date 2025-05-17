@@ -1,4 +1,18 @@
-import { CreatePlatformEndpointCommand, CreatePlatformEndpointCommandOutput, DeleteEndpointCommand, DeleteEndpointCommandOutput, GetEndpointAttributesCommand, GetEndpointAttributesCommandOutput, SNSClient } from "@aws-sdk/client-sns";
+import { 
+  CreatePlatformEndpointCommand, 
+  CreatePlatformEndpointCommandOutput, 
+  DeleteEndpointCommand, 
+  DeleteEndpointCommandOutput, 
+  GetEndpointAttributesCommand, 
+  GetEndpointAttributesCommandOutput, 
+  PublishCommand, 
+  PublishCommandOutput, 
+  SNSClient, 
+  SubscribeCommand,
+  SubscribeCommandOutput,
+  UnsubscribeCommand,
+  UnsubscribeCommandOutput
+ } from "@aws-sdk/client-sns";
 import { AwsService } from "./aws-service";
 import { PLATFORM_APPLICATION_ARN } from "../constants";
 
@@ -54,6 +68,61 @@ export class SNSService extends AwsService {
       }),
       'DeleteEndpointCommand'
     );
+  };
+
+  /**
+   * subscribe the endpoint
+   * @param topicArn 
+   * @param targetEndpoint
+   */
+  subscribeSNSTopic = (
+    topicArn: string,
+    endpointArn: string
+  ): Promise<SubscribeCommandOutput> => {
+    return this.executeCommand(
+      new SubscribeCommand({
+        TopicArn: topicArn,
+        Protocol: 'application',
+        Endpoint: endpointArn
+      }),
+      'SubscribeCommand'
+    );
+  };
+
+  /**
+   * unsubscribe the subscription
+   * @param subscribeArn 
+   */
+  unsubscribeSNSTopic = (
+    subscribeArn: string
+  ): Promise<UnsubscribeCommandOutput> => {
+    return this.executeCommand(
+      new UnsubscribeCommand({
+        SubscriptionArn: subscribeArn
+      }),
+      'UnsubscribeCommand'
+    );
+  }
+
+  /**
+   * publish message to targetEndpoint/topic
+   * @param message 
+   * @param topicArn 
+   * @param targetEndpointArn
+   */
+  publishMessage = (
+    message: string,
+    topicArn?: string,
+    targetEndpointArn?: string
+  ): Promise<PublishCommandOutput> => {
+    return this.executeCommand(
+      new PublishCommand({
+        TopicArn: topicArn,
+        TargetArn: targetEndpointArn,
+        Message: message
+      }),
+      'PublishCommand'
+    )
   };
   
 } 

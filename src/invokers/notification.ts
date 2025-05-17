@@ -3,10 +3,12 @@ import { createLogger, CustomLogger } from "../lib/logger";
 import { NotificationController } from "../controllers/notification-controller";
 import { INotificationEvent } from "../types/notification";
 import { DynamodbService } from '../services/dynamodb-service';
+import { SNSService } from '../services/sns-service';
 
 const logger: CustomLogger = createLogger({fileName: 'NotificationInvoker'});
 const dynamodb: DynamodbService = new DynamodbService();
-const controller: NotificationController = new NotificationController(dynamodb);
+const snsService: SNSService = new SNSService(); 
+const controller: NotificationController = new NotificationController(dynamodb, snsService);
 
 export const handler: Handler = async(event: SNSEvent): Promise<void> => {
   logger.debug('Invoked with input event: %s', JSON.stringify(event));
