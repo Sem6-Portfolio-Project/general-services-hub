@@ -1,10 +1,5 @@
-import { 
-  IDeviceRegisterReq, 
-  INotificationEvent
- } from "../types/notification";
-import { 
-  createLogger,
-  CustomLogger } from "../lib/logger";
+import { IDeviceRegisterReq, INotificationEvent } from "../types/notification";
+import { createLogger, CustomLogger } from "../lib/logger";
 import { NOTIFICATION_TYPES, SNS_TOPICS, TABLES } from "../constants";
 import { DynamodbService } from "../services/dynamodb-service";
 import { 
@@ -24,12 +19,10 @@ export class NotificationController {
   ) {
   }
 
-  //TODO: need to fetch connection ids
-  getConnectionIds = async(type: string) => {
-
-  }
-
-  //TODO: need to send the notifications for subscribed users
+  /**
+   * send notifications to snsTopic or diretly to endpoint.
+   * @param data 
+   */
   sendNotification = async(data: INotificationEvent) => {
 
     logger.debug('Invoked sendNotification with input: %s', JSON.stringify(data));

@@ -1,10 +1,9 @@
 import { marshall, NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
-import { IDeviceRegisterReq, INotificationEvent } from "../types/notification";
+import { INotificationEvent } from "../types/notification";
 
 export const intoToDDB = (data: INotificationEvent) => {
   return {
-    title: data.title,
-    description: data.description,
+    message: data.message,
     time_stamp: data.timeStamp,
     type: data.type,
     receivers: data?.receivers,
