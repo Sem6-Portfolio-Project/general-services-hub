@@ -5,7 +5,7 @@ import {
 import { 
   createLogger,
   CustomLogger } from "../lib/logger";
-import { SNS_TOPICS, TABLES } from "../constants";
+import { NOTIFICATION_TYPES, SNS_TOPICS, TABLES } from "../constants";
 import { DynamodbService } from "../services/dynamodb-service";
 import { 
   getddbKeyofEndpoints, 
@@ -31,12 +31,38 @@ export class NotificationController {
 
   //TODO: need to send the notifications for subscribed users
   sendNotification = async(data: INotificationEvent) => {
+
     logger.debug('Invoked sendNotification with input: %s', JSON.stringify(data));
     
     try {
+      if(data?.receivers && data.receivers?.length != 0) {
+        logger.debug('Publishing messages to targetEnponts: %s', data.receivers);
+
+        const publishPromises = data.receivers.map((receiver) =>
+            this.snsService.publishMessage(data.message, undefined, receiver));
+        await Promise.all(publishPromises)
+
+      } else if(data.type == NOTIFICATION_TYPES.LOST_FOUND.value) {
+        logger.debug('Publishing message to sns topic: %s', NOTIFICATION_TYPES.LOST_FOUND.snsTopic.name);
+
+        await this.snsService.publishMessage(
+          data.message, 
+          NOTIFICATION_TYPES.LOST_FOUND.snsTopic.arn, 
+          undefined
+        );
+
+      } else if(data.type == NOTIFICATION_TYPES.SYSTEM.value) {
+        logger.debug('Publishing message to sns topic: %s', NOTIFICATION_TYPES.SYSTEM.snsTopic.name);
+
+        await this.snsService.publishMessage(
+          data.message, 
+          NOTIFICATION_TYPES.SYSTEM.snsTopic.arn, 
+          undefined
+        );
+      };
+
       logger.debug('Saving notification to %s', TABLES.NOTIFICATIONS);
       await this.saveNotification(data);
-      // todo: send notification
 
     } catch (e) {
       logger.error('Error while executing the sendNotification; error: %s', e);

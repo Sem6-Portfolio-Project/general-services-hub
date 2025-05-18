@@ -1,4 +1,4 @@
-import { Handler, SNSEvent, SNSMessage } from 'aws-lambda';
+import { Handler, SQSEvent, SQSRecord } from 'aws-lambda';
 import { createLogger, CustomLogger } from "../lib/logger";
 import { NotificationController } from "../controllers/notification-controller";
 import { INotificationEvent } from "../types/notification";
@@ -10,15 +10,18 @@ const dynamodb: DynamodbService = new DynamodbService();
 const snsService: SNSService = new SNSService(); 
 const controller: NotificationController = new NotificationController(dynamodb, snsService);
 
-export const handler: Handler = async(event: SNSEvent): Promise<void> => {
+export const handler: Handler = async(event: SQSEvent): Promise<void> => {
   logger.debug('Invoked with input event: %s', JSON.stringify(event));
-  const snsPayload: SNSMessage = event.Records[0].Sns;
-  const snsMessage = JSON.parse(snsPayload.Message) as INotificationEvent;
+
+  const sqsPayload: SQSRecord = event.Records[0];
+  const sqsMessage = JSON.parse(sqsPayload.body) as INotificationEvent;
 
   try {
-    logger.debug('Executing the sendNotification with input : %s', JSON.stringify(snsMessage));
-    await controller.sendNotification(snsMessage);
+    logger.debug('Executing the sendNotification with input : %s', JSON.stringify(sqsMessage));
+
+    await controller.sendNotification(sqsMessage);
+
   } catch (e) {
-    logger.error('Error while invoking with error; %s', e);
+    logger.error('Error while invoking handler with error; %s', e);
   }
 }
