@@ -30,7 +30,7 @@ export const NOTIFICATION_TYPES = {
 }
 
 export const TABLES = {
-  APPLICATION_ENDPOINTS: "ApplicationEnpoints",
+  APPLICATION_ENDPOINTS: "PlatformEndpoints",
   NOTIFICATIONS: "Notifications",
 }
 
@@ -41,3 +41,4 @@ export const CONNECTION_TYPES = {
 
 export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN;
 
+export const NOTIFICATION_QUEUE = process.env.NOTIFICATION_QUEUE;
