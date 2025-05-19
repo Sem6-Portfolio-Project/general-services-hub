@@ -40,5 +40,4 @@ export const CONNECTION_TYPES = {
 }
 
 export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN;
-
 export const NOTIFICATION_QUEUE = process.env.NOTIFICATION_QUEUE;
