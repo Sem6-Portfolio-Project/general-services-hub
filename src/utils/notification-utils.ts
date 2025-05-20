@@ -1,5 +1,3 @@
-import { INotificationEvent } from "../types/notification";
-
 /**
  * this will generate the notification across all device ( ios, android, web ).
  * if you need platform specific one, then it should be handled differently.
