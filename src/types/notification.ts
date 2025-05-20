@@ -1,5 +1,7 @@
 export interface INotification {
-  message: string,
+  title: string,
+  description: string,
+  image?: string,
   timeStamp: string,
   type: number
 }

@@ -2,13 +2,14 @@ import { IDeviceRegisterReq, INotificationEvent } from "../types/notification";
 import { createLogger, CustomLogger } from "../lib/logger";
 import { NOTIFICATION_TYPES, SNS_TOPICS, TABLES } from "../constants";
 import { DynamodbService } from "../services/dynamodb-service";
-import { 
-  getddbKeyofEndpoints, 
-  getNotificationData, 
+import {
+  getddbKeyofEndpoints,
+  getSubscriptionData,
   intoToDDB,
-  notificationDataToddb
- } from "../mappers/notification-mapper";
+  subscriptionDataToddb
+} from "../mappers/notification-mapper";
 import { SNSService } from "../services/sns-service";
+import { generateFCMNotification } from "../utils/notification-utils";
 
 const logger: CustomLogger = createLogger({fileName: 'NotificationController'});
 
@@ -32,14 +33,18 @@ export class NotificationController {
         logger.debug('Publishing messages to targetEnponts: %s', data.receivers);
 
         const publishPromises = data.receivers.map((receiver) =>
-            this.snsService.publishMessage(data.message, undefined, receiver));
+            this.snsService.publishMessage(
+              generateFCMNotification(data.title, data.description, data?.image),
+              undefined,
+              receiver
+            ));
         await Promise.all(publishPromises)
 
       } else if(data.type == NOTIFICATION_TYPES.LOST_FOUND.value) {
         logger.debug('Publishing message to sns topic: %s', NOTIFICATION_TYPES.LOST_FOUND.snsTopic.name);
 
         await this.snsService.publishMessage(
-          data.message, 
+          generateFCMNotification(data.title, data.description, data?.image),
           NOTIFICATION_TYPES.LOST_FOUND.snsTopic.arn, 
           undefined
         );
@@ -48,11 +53,11 @@ export class NotificationController {
         logger.debug('Publishing message to sns topic: %s', NOTIFICATION_TYPES.SYSTEM.snsTopic.name);
 
         await this.snsService.publishMessage(
-          data.message, 
+          generateFCMNotification(data.title, data.description, data?.image),
           NOTIFICATION_TYPES.SYSTEM.snsTopic.arn, 
           undefined
         );
-      };
+      }
 
       logger.debug('Saving notification to %s', TABLES.NOTIFICATIONS);
       await this.saveNotification(data);
@@ -82,20 +87,20 @@ export class NotificationController {
 
   /**
    * register device endpoint in the SNS 
-   * @param deviceToken 
+   * @param reqData
    */
   registerDevice = async(reqData: IDeviceRegisterReq) => {
     const {email, deviceToken} = reqData;
     logger.debug('Invoked registerDevice with reqData: %s', reqData);
 
     try {
-      const existingddbData = await this.dynamodbService.getItem(
+      const existingDDBData = await this.dynamodbService.getItem(
         TABLES.APPLICATION_ENDPOINTS,
         getddbKeyofEndpoints(email)
       );
 
-      if(existingddbData?.Item) {
-        const existingData = getNotificationData(existingddbData.Item);
+      if(existingDDBData?.Item) {
+        const existingData = getSubscriptionData(existingDDBData.Item);
         try {
           logger.debug('Getting application endpoint attributes.');
           const endpointAttributes = await this.snsService.getEndpointAttributes(existingData.deviceToken);
@@ -138,20 +143,20 @@ export class NotificationController {
     logger.debug('Creating application endpoint with deviceToken: %s', deviceToken);
 
     try {
-      const newplatformEndpointData = await this.snsService.createApplicationEndpoint(deviceToken);
+      const newPlatformEndpointData = await this.snsService.createApplicationEndpoint(deviceToken);
 
-      if(newplatformEndpointData?.EndpointArn) {
+      if(newPlatformEndpointData?.EndpointArn) {
         logger.debug('Saving application endpoint to ddbTable: %s', TABLES.APPLICATION_ENDPOINTS);
 
-        const subscriptionArns = await this.subscribSNSTopics(newplatformEndpointData.EndpointArn);
+        const subscriptionArns = await this.subscribeSNSTopics(newPlatformEndpointData.EndpointArn);
 
         if (subscriptionArns?.length == 2) {
           await this.dynamodbService.put(
             TABLES.APPLICATION_ENDPOINTS,
-            notificationDataToddb({
+            subscriptionDataToddb({
               email,
               deviceToken,
-              endpointArn: newplatformEndpointData.EndpointArn,
+              endpointArn: newPlatformEndpointData.EndpointArn,
               sysSubscriptionArn: subscriptionArns[0],
               lostItemSubscriptionArn: subscriptionArns[1]
             })
@@ -167,8 +172,8 @@ export class NotificationController {
    * subscribing to the sns topics
    * @param endpointArn 
    */
-  subscribSNSTopics = async(endpointArn: string) => {
-    logger.debug('Invoking the subscribSNSTopics with endpointArn: %s', endpointArn);
+  subscribeSNSTopics = async(endpointArn: string) => {
+    logger.debug('Invoking the subscribeSNSTopics with endpointArn: %s', endpointArn);
 
     try {
       logger.debug('Subscribing the topic : %s', SNS_TOPICS.SYSTEM.name);
@@ -195,13 +200,13 @@ export class NotificationController {
    * @param subscriptionArns 
    */
   unsubscribeTopics = async(subscriptionArns: string[]) => {
-    logger.debug('Invoking the unsubscribSNSTopics');
+    logger.debug('Invoking the unsubscribeSNSTopics');
 
     try {
       for(const arn of subscriptionArns) {
         await this.snsService.unsubscribeSNSTopic(arn);
-        logger.debug('Successfully unsubscribSNSTopic: %s', arn);
-      };
+        logger.debug('Successfully unsubscribeSNSTopic: %s', arn);
+      }
     } catch (e) {
       logger.error('Error while unsubscribing subscriptionArns; %o', e);
     }

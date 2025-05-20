@@ -1,3 +1,4 @@
+import { INotificationEvent } from "../types/notification";
 
 /**
  * this will generate the notification across all device ( ios, android, web ).
@@ -25,4 +26,5 @@ export const generateFCMNotification = (
     })
   };
   return JSON.stringify(payload);
-}
+};
+

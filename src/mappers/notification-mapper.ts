@@ -3,7 +3,9 @@ import { INotificationEvent } from "../types/notification";
 
 export const intoToDDB = (data: INotificationEvent) => {
   return {
-    message: data.message,
+    title: data.title,
+    description: data.description,
+    image: data?.image,
     time_stamp: data.timeStamp,
     type: data.type,
     receivers: data?.receivers,
@@ -17,7 +19,7 @@ export const getddbKeyofEndpoints = (email: string) => {
   }
 };
 
-export const getNotificationData = (record: Record<string, NativeAttributeValue>) => {
+export const getSubscriptionData = (record: Record<string, NativeAttributeValue>) => {
   const unmarshalledRecord = unmarshall(record);
   return {
     email: unmarshalledRecord.email,
@@ -28,7 +30,7 @@ export const getNotificationData = (record: Record<string, NativeAttributeValue>
   };
 };
 
-export const notificationDataToddb = (data: any) => {
+export const subscriptionDataToddb = (data: any) => {
   return {
     email: data.email,
     device_token: data.deviceToken,
