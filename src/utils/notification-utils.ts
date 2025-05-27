@@ -26,3 +26,20 @@ export const generateFCMNotification = (
   return JSON.stringify(payload);
 };
 
+export const generateSQSEventBody = (
+  title: string,
+  type: number,
+  description?: string,
+  image?: string,
+  receivers?: string[],
+  receiverType?: number
+) => {
+  return JSON.stringify({
+    title,
+    description,
+    type,
+    image,
+    receivers,
+    receiverType
+  });
+}

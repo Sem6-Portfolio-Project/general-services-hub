@@ -30,6 +30,7 @@
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "logform": "^2.7.0",
+    "nanoid": "^5.1.5",
     "reflect-metadata": "^0.2.2",
     "serverless-http": "^3.2.0",
     "triple-beam": "^1.4.1",

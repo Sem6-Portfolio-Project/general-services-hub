@@ -32,6 +32,7 @@ export const NOTIFICATION_TYPES = {
 export const TABLES = {
   APPLICATION_ENDPOINTS: "PlatformEndpoints",
   NOTIFICATIONS: "Notifications",
+  LOST_OR_FOUND_ITEMS: "LostOrFoundItems"
 }
 
 export const CONNECTION_TYPES = {
@@ -39,5 +40,19 @@ export const CONNECTION_TYPES = {
   PASSENGER: 2,
 }
 
-export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN;
-export const NOTIFICATION_QUEUE = process.env.NOTIFICATION_QUEUE;
+export const S3_BUCKETS = {
+  LOST_OR_FOUND_ITEM_IMAGES: "LostOrFoundItemImages"
+}
+
+export const S3_OBJECTS_ACL_POLICY = {
+  PRIVATE: "private",
+  PUBLIC_READ: "public-read",
+  PUBLIC_READ_WRITE: "public-read-write",
+  AUTHENTICATED_READ: "authenticated-read",
+  AWS_EXEC_READ: "aws-exec-read",
+  BUCKET_OWNER_READ: "bucket-owner-read",
+  BUCKET_OWNER_FULL_CONTROL: "bucket-owner-full-control"
+}
+
+export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN || '';
+export const NOTIFICATION_QUEUE = process.env.NOTIFICATION_QUEUE || '';

@@ -1,6 +1,7 @@
 import { 
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
+  ObjectCannedACL,
   PutObjectCommand,
   PutObjectCommandOutput,
   S3Client
@@ -28,9 +29,9 @@ export class S3Service extends AwsService {
   uploadObject= (
     bucket: string,
     fileName: string,
-    body: string,
+    body: Buffer<ArrayBuffer>,
     fileType: string,
-    policy: 'public-read'
+    policy: string
   ): Promise<PutObjectCommandOutput> => {
     return this.executeCommand(
       new PutObjectCommand({
@@ -38,7 +39,7 @@ export class S3Service extends AwsService {
         Key: fileName,
         Body: body,
         ContentType: fileType,
-        ACL: policy
+        ACL: policy as ObjectCannedACL
       }),
       "PutObjectCommand"
     );
