@@ -54,5 +54,7 @@ export const S3_OBJECTS_ACL_POLICY = {
   BUCKET_OWNER_FULL_CONTROL: "bucket-owner-full-control"
 }
 
+export const DEFAULT_LIMIT_UPPER_BOUND = 10;
+
 export const PLATFORM_APPLICATION_ARN = process.env.PLATFORM_APPLICATION_ARN || '';
 export const NOTIFICATION_QUEUE = process.env.NOTIFICATION_QUEUE || '';

@@ -1,5 +1,6 @@
 import { AwsService } from "./aws-service";
 import {
+  AttributeValue,
   DeleteItemCommand,
   DeleteItemCommandOutput,
   DynamoDBClient,
@@ -141,11 +142,17 @@ export class DynamodbService extends AwsService {
    * @param tableName
    */
   scan = (
-    tableName: string
+    tableName: string,
+    limit?: number,
+    filterExpression?: string,
+    expressionAttributeValues?: Record<string, AttributeValue>
   ): Promise<ScanCommandOutput> => {
     return this.executeCommand(
       new ScanCommand({
-        TableName: tableName
+        TableName: tableName,
+        Limit: limit,
+        FilterExpression: filterExpression,
+        ExpressionAttributeValues: expressionAttributeValues
       }),
       "ScanCommand"
     )

@@ -35,3 +35,10 @@ export const DDBObjToLostFoundItem = (record: Record<string, NativeAttributeValu
   } as ILostOrFoundItem;
 }
 
+export const getfilterExpression = () => {
+  return "isFoundItem = :val"
+}
+
+export const expressionAttributeValues = () => {
+  return 
+}

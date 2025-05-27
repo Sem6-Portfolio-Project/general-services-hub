@@ -1,4 +1,5 @@
 import { 
+  DEFAULT_LIMIT_UPPER_BOUND,
   NOTIFICATION_QUEUE,
   NOTIFICATION_TYPES,
   S3_BUCKETS,
@@ -9,6 +10,7 @@ import { Request, Response } from "express";
 import { createLogger, CustomLogger } from "../lib/logger";
 import { 
   DDBObjToLostFoundItem,
+  getfilterExpression,
   getLostFoundItemKey,
   lostFoundItemToDDB
  } from "../mappers/lostfound-mapper";
@@ -170,10 +172,20 @@ export class LostFoundItemController {
   }
 
   getLostOrFoundItems = async(req: Request, res: Response) =>  {
-    
-    // fetch the items from the ddb based on the range (1-10 like that)
-
-    // then return them
+    const isFoundItem = req.query.isFound as string === 'true' ? true : false;
+    const limitUpperBound = Number(req.query.limit as string) || DEFAULT_LIMIT_UPPER_BOUND;
+    const returnItems: ILostOrFoundItem[] = []
+    try {
+      logger.debug(`Retriving ${isFoundItem ? 'found':'lost'} items with limitUpperBound: %s`, limitUpperBound);
+      const filteredData = await this.dynamodbService.scan(
+        TABLES.LOST_OR_FOUND_ITEMS,
+        limitUpperBound,
+        getfilterExpression(),
+        
+      );
+    } catch (e) {
+      
+    }
   }
 
   /**
