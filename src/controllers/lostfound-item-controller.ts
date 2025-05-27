@@ -30,6 +30,11 @@ export class LostFoundItemController {
 
   ) {}
 
+  /**
+   * this will uplaod images to s3, save lost/found data to ddb and create notification sqs event
+   * @param req 
+   * @param res 
+   */
   postLostOrFoundItem = async(req: Request, res: Response) =>  {
     const data = req.body as ILostOrFoundItem;
     const images: string[] = [];
@@ -120,6 +125,11 @@ export class LostFoundItemController {
     });
   }
 
+  /**
+   * this retrive the lost/found item data 
+   * @param req 
+   * @param res 
+   */
   getLostOrFoundItem = async(req: Request, res: Response) =>  {
     const lostFoundItemId: string = req.query.id as string;
     try {
@@ -160,17 +170,39 @@ export class LostFoundItemController {
   }
 
   getLostOrFoundItems = async(req: Request, res: Response) =>  {
-
+    
     // fetch the items from the ddb based on the range (1-10 like that)
 
     // then return them
   }
 
+  /**
+   * deleted the lost/found item from the ddb
+   * @param req 
+   * @param res 
+   */
   deleteLostFoundItem = async(req: Request, res: Response) =>  {
-
-    // delete the item by the id
-
+    const lostFoundItemId: string = req.query.id as string;
+    try {
+      logger.debug('Deleting lost/found item with id: %s', lostFoundItemId);
+      await this.dynamodbService.delete(
+        TABLES.LOST_OR_FOUND_ITEMS,
+        getLostFoundItemKey(lostFoundItemId)
+      );
+      successResponse({
+        res,
+        body: {
+          message: 'Successfuly deleted the item from the ddb.'
+        }
+      })
+    } catch (e) {
+      failureResponse({
+        res,
+        status: 400,
+        body: {
+          message: "Error while deleting the lost/found item"
+        }
+      }); 
+    }
   }
-
-
 }
