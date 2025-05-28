@@ -39,6 +39,8 @@ export const getfilterExpression = () => {
   return "isFoundItem = :val"
 }
 
-export const expressionAttributeValues = () => {
-  return 
+export const getExprAttributeValues = (isFoundItem: boolean) => {
+  return {
+    ":val": marshall(isFoundItem)
+  };
 }

@@ -10,6 +10,7 @@ import { Request, Response } from "express";
 import { createLogger, CustomLogger } from "../lib/logger";
 import { 
   DDBObjToLostFoundItem,
+  getExprAttributeValues,
   getfilterExpression,
   getLostFoundItemKey,
   lostFoundItemToDDB
@@ -171,6 +172,11 @@ export class LostFoundItemController {
     }
   }
 
+  /**
+   * this filtered the data from the ddb based on the limit and found/lost.
+   * @param req 
+   * @param res 
+   */
   getLostOrFoundItems = async(req: Request, res: Response) =>  {
     const isFoundItem = req.query.isFound as string === 'true' ? true : false;
     const limitUpperBound = Number(req.query.limit as string) || DEFAULT_LIMIT_UPPER_BOUND;
@@ -181,10 +187,31 @@ export class LostFoundItemController {
         TABLES.LOST_OR_FOUND_ITEMS,
         limitUpperBound,
         getfilterExpression(),
-        
+        getExprAttributeValues(isFoundItem)
       );
+
+      if(filteredData?.Items) {
+        filteredData.Items.map((record) => {
+          returnItems.push(DDBObjToLostFoundItem(record));
+        })
+      };
+
+      successResponse({
+        res,
+        body: {
+          data: returnItems,
+          message: "Successfuly filtered the data."
+        }
+      })
     } catch (e) {
-      
+      logger.debug('Error while scaning the data from the ddb; error: %o', e);
+      failureResponse({
+        res,
+        status: 400,
+        body: {
+          message: "Error while scaning the lost/found item"
+        }
+      });   
     }
   }
 
