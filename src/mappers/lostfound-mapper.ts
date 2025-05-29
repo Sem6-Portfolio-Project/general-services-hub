@@ -1,6 +1,6 @@
 import { marshall, NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
 import { nanoid } from 'nanoid';
-import { ILostOrFoundItem } from "../types/lostfound-items";
+import { ILostOrFoundItem } from "../types/lostfound-items.js";
 
 export const lostFoundItemToDDB = (data: any) => {
   return {

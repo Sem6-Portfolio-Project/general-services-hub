@@ -1,9 +1,9 @@
 import { Handler, SQSEvent, SQSRecord } from 'aws-lambda';
-import { createLogger, CustomLogger } from "../lib/logger";
-import { NotificationController } from "../controllers/notification-controller";
-import { INotificationEvent } from "../types/notification";
-import { DynamodbService } from '../services/dynamodb-service';
-import { SNSService } from '../services/sns-service';
+import { createLogger, CustomLogger } from "../lib/logger.js";
+import { NotificationController } from "../controllers/notification-controller.js";
+import { INotificationEvent } from "../types/notification.js";
+import { DynamodbService } from '../services/dynamodb-service.js';
+import { SNSService } from '../services/sns-service.js';
 
 const logger: CustomLogger = createLogger({fileName: 'NotificationInvoker'});
 const dynamodb: DynamodbService = new DynamodbService();

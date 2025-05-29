@@ -1,4 +1,4 @@
-import { AwsService } from "./aws-service";
+import { AwsService } from "./aws-service.js";
 import {
   AttributeValue,
   DeleteItemCommand,

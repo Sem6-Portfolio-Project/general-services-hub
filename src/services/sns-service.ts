@@ -13,8 +13,8 @@ import {
   UnsubscribeCommand,
   UnsubscribeCommandOutput
  } from "@aws-sdk/client-sns";
-import { AwsService } from "./aws-service";
-import { PLATFORM_APPLICATION_ARN } from "../constants";
+import { AwsService } from "./aws-service.js";
+import { PLATFORM_APPLICATION_ARN } from "../constants.js";
 
 export class SNSService extends AwsService {
   constructor() {

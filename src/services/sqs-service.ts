@@ -3,7 +3,7 @@ import {
   SendMessageCommandOutput,
   SQSClient
  } from "@aws-sdk/client-sqs";
-import { AwsService } from "./aws-service";
+import { AwsService } from "./aws-service.js";
 
 export class SQSService extends AwsService {
   constructor() {

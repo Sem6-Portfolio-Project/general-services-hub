@@ -3,7 +3,7 @@ import { Express } from "express";
 import { container } from "tsyringe";
 import serverless from "serverless-http";
 import { getApp } from "../../lib/express-app.js";
-import { GeneralServiceRouter } from "../../routes/general-service-router";
+import { GeneralServiceRouter } from "../../routes/general-service-router.js";
 import {
     APIGatewayProxyEvent,
     APIGatewayProxyHandler,

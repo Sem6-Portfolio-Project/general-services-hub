@@ -1,5 +1,5 @@
 import { marshall, NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
-import { INotificationEvent } from "../types/notification";
+import { INotificationEvent } from "../types/notification.js";
 
 export const intoToDDB = (data: INotificationEvent) => {
   return {

@@ -1,18 +1,22 @@
-import { IDeviceRegisterReq, INotificationEvent } from "../types/notification";
-import { createLogger, CustomLogger } from "../lib/logger";
-import { NOTIFICATION_TYPES, SNS_TOPICS, TABLES } from "../constants";
-import { DynamodbService } from "../services/dynamodb-service";
+import { Request, Response } from "express";
+import { IDeviceRegisterReq, INotificationEvent } from "../types/notification.js";
+import { createLogger, CustomLogger } from "../lib/logger.js";
+import { NOTIFICATION_TYPES, SNS_TOPICS, TABLES } from "../constants.js";
+import { DynamodbService } from "../services/dynamodb-service.js";
 import {
   getddbKeyofEndpoints,
   getSubscriptionData,
   intoToDDB,
   subscriptionDataToddb
-} from "../mappers/notification-mapper";
-import { SNSService } from "../services/sns-service";
-import { generateFCMNotification } from "../utils/notification-utils";
+} from "../mappers/notification-mapper.js";
+import { SNSService } from "../services/sns-service.js";
+import { generateFCMNotification } from "../utils/notification-utils.js";
+import { injectable } from "tsyringe";
+import { failureResponse } from "../lib/response.js";
 
 const logger: CustomLogger = createLogger({fileName: 'NotificationController'});
 
+@injectable()
 export class NotificationController {
   constructor(
     private dynamodbService: DynamodbService,
@@ -89,9 +93,11 @@ export class NotificationController {
    * register device endpoint in the SNS 
    * @param reqData
    */
-  registerDevice = async(reqData: IDeviceRegisterReq) => {
+  registerDevice = async(req: Request, res: Response) => {
+    const reqData = req.body as IDeviceRegisterReq
     const {email, deviceToken} = reqData;
-    logger.debug('Invoked registerDevice with reqData: %s', reqData);
+
+    logger.debug('Invoked registerDevice with emial: %s, reqData: %s', email, reqData);
 
     try {
       const existingDDBData = await this.dynamodbService.getItem(
@@ -123,7 +129,15 @@ export class NotificationController {
             await this.createAndSaveEndpoint(reqData);
           } else {
             logger.error('Error while getting endpointAttributes. error: %s', e);
+            failureResponse({
+              res,
+              status: 400,
+              body: {
+                message: 'Error while getting endpointAttributes'
+              }
+            });
           }
+
         }
       } else {
         logger.info('No existing endpoint, creating new endpoint...');
@@ -131,6 +145,13 @@ export class NotificationController {
       }
     } catch (e) {
       logger.error('Unexpected error during device registration: %o', e);
+      failureResponse({
+        res,
+        status: 400,
+        body: {
+          message: 'Unexpected error during device registration'
+        }
+      });
     }
   }
 

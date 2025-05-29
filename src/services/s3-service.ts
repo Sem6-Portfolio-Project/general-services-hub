@@ -6,7 +6,7 @@ import {
   PutObjectCommandOutput,
   S3Client
  } from "@aws-sdk/client-s3";
-import { AwsService } from "./aws-service";
+import { AwsService } from "./aws-service.js";
 
 export class S3Service extends AwsService {
 

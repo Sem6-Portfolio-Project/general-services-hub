@@ -5,26 +5,28 @@ import {
   S3_BUCKETS,
   S3_OBJECTS_ACL_POLICY,
   TABLES
- } from "../constants";
+ } from "../constants.js";
 import { Request, Response } from "express";
-import { createLogger, CustomLogger } from "../lib/logger";
+import { createLogger, CustomLogger } from "../lib/logger.js";
 import { 
   DDBObjToLostFoundItem,
   getExprAttributeValues,
   getfilterExpression,
   getLostFoundItemKey,
   lostFoundItemToDDB
- } from "../mappers/lostfound-mapper";
-import { DynamodbService } from "../services/dynamodb-service";
-import { S3Service } from "../services/s3-service";
-import { SQSService } from "../services/sqs-service";
-import { ILostOrFoundItem } from "../types/lostfound-items";
-import { generateSQSEventBody } from "../utils/notification-utils";
-import { getImageAccessPubUrl } from "../utils/s3-utils";
-import { failureResponse, successResponse } from "../lib/response";
+ } from "../mappers/lostfound-mapper.js";
+import { DynamodbService } from "../services/dynamodb-service.js";
+import { S3Service } from "../services/s3-service.js";
+import { SQSService } from "../services/sqs-service.js";
+import { ILostOrFoundItem } from "../types/lostfound-items.js";
+import { generateSQSEventBody } from "../utils/notification-utils.js";
+import { getImageAccessPubUrl } from "../utils/s3-utils.js";
+import { failureResponse, successResponse } from "../lib/response.js";
+import { injectable } from "tsyringe";
 
 const logger: CustomLogger = createLogger({fileName: 'NotificationController'});
 
+@injectable()
 export class LostFoundItemController {
   constructor(
     private dynamodbService: DynamodbService,
