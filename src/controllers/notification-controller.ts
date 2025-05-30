@@ -111,13 +111,19 @@ export class NotificationController {
           logger.debug('Getting application endpoint attributes.');
           const endpointAttributes = await this.snsService.getEndpointAttributes(existingData.endpointArn);
 
-          if(!endpointAttributes?.Attributes?.Enabled || endpointAttributes?.Attributes?.Token != deviceToken) {
-            logger.debug('Deleting application endpoint.');
-
+          if(!endpointAttributes?.Attributes?.Enabled || endpointAttributes?.Attributes?.Token == deviceToken) {
+            
             try {
-              await this.snsService.deleteEndpoint(existingData.endpointArn);
+              await this.deleteApplicationEndpointAndSubscriptions(existingData);
             } catch (e) {
-              logger.error('Error while deleting the application endpoint; error: %s', e);
+              logger.error('Error while executing deleteApplicationEndpointAndSubscriptions; error: %s', e);
+              failureResponse({
+                res,
+                status: 400,
+                body: {
+                  message: 'Error while executing deleteApplicationEndpointAndSubscriptions'
+                }
+              });
             }
             
             await this.createAndSaveEndpoint(reqData);
@@ -242,6 +248,27 @@ export class NotificationController {
     } catch (e) {
       logger.error('Error while subscribing the topics; error: %o', e);
     }
+  }
+
+  /**
+   * deleting application end point and subscriptions
+   * @param existingData 
+   */
+  deleteApplicationEndpointAndSubscriptions = async(existingData: any) => {
+    try {
+      logger.debug('Deleting application endpoint.');
+      await this.snsService.deleteEndpoint(existingData.endpointArn);
+    } catch (e) {
+      logger.error('Error while deleting the application endpoint.');
+    }
+
+    try {
+      logger.debug('Unsubscribing the subscriptions');
+      await this.unsubscribeTopics([existingData.sysSubscriptionArn, existingData.lostItemSubscriptionArn]);
+    } catch (e) {
+      logger.error('Error while unsubscribing the subscriptions.');
+    }
+
   }
 
   /**
