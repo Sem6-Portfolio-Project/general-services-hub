@@ -30,12 +30,13 @@ export const getSubscriptionData = (record: Record<string, NativeAttributeValue>
   };
 };
 
-export const subscriptionDataToddb = (data: any) => {
+export const subscriptionDataToddb = (record: Record<string, NativeAttributeValue>) => {
+  const marshalledData = marshall(record);
   return {
-    email: data.email,
-    device_token: data.deviceToken,
-    endpoint_arn: data.endpointArn,
-    sys_subscription_arn: data.sysSubscriptionArn,
-    lost_item_subscription_arn: data.lostItemSubscriptionArn,
+    email: marshalledData.email,
+    device_token: marshalledData.deviceToken,
+    endpoint_arn: marshalledData.endpointArn,
+    sys_subscription_arn: marshalledData.sysSubscriptionArn,
+    lost_item_subscription_arn: marshalledData.lostItemSubscriptionArn,
   };
 };

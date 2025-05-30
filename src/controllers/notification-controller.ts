@@ -12,7 +12,7 @@ import {
 import { SNSService } from "../services/sns-service.js";
 import { generateFCMNotification } from "../utils/notification-utils.js";
 import { injectable } from "tsyringe";
-import { failureResponse } from "../lib/response.js";
+import { failureResponse, successResponse } from "../lib/response.js";
 
 const logger: CustomLogger = createLogger({fileName: 'NotificationController'});
 
@@ -97,7 +97,7 @@ export class NotificationController {
     const reqData = req.body as IDeviceRegisterReq
     const {email, deviceToken} = reqData;
 
-    logger.debug('Invoked registerDevice with emial: %s, reqData: %s', email, reqData);
+    logger.debug('Invoked registerDevice with emial: %s, deviceToken: %s', email, deviceToken);
 
     try {
       const existingDDBData = await this.dynamodbService.getItem(
@@ -109,7 +109,7 @@ export class NotificationController {
         const existingData = getSubscriptionData(existingDDBData.Item);
         try {
           logger.debug('Getting application endpoint attributes.');
-          const endpointAttributes = await this.snsService.getEndpointAttributes(existingData.deviceToken);
+          const endpointAttributes = await this.snsService.getEndpointAttributes(existingData.endpointArn);
 
           if(!endpointAttributes?.Attributes?.Enabled || endpointAttributes?.Attributes?.Token != deviceToken) {
             logger.debug('Deleting application endpoint.');
@@ -121,12 +121,34 @@ export class NotificationController {
             }
             
             await this.createAndSaveEndpoint(reqData);
+
+            successResponse({
+              res,
+              body: {
+                message: 'Successfully registered the device.'
+              }
+            });
+          } else {
+            successResponse({
+              res,
+              body: {
+                message: 'No need to re-register the application endpoint.'
+              }
+            });
           }
+
         } catch (e: any) {
           if (e.code === 'NotFoundException') {
             logger.error('Endpoint does not exist. error: %s', e);
 
             await this.createAndSaveEndpoint(reqData);
+
+            successResponse({
+              res,
+              body: {
+                message: 'Successfully registered the device.'
+              }
+            });
           } else {
             logger.error('Error while getting endpointAttributes. error: %s', e);
             failureResponse({
@@ -142,6 +164,12 @@ export class NotificationController {
       } else {
         logger.info('No existing endpoint, creating new endpoint...');
         await this.createAndSaveEndpoint(reqData);
+        successResponse({
+          res,
+          body: {
+            message: 'Successfully registered the device.'
+          }
+        });
       }
     } catch (e) {
       logger.error('Unexpected error during device registration: %o', e);
@@ -175,8 +203,8 @@ export class NotificationController {
           await this.dynamodbService.put(
             TABLES.APPLICATION_ENDPOINTS,
             subscriptionDataToddb({
-              email,
-              deviceToken,
+              email: email,
+              deviceToken: deviceToken,
               endpointArn: newPlatformEndpointData.EndpointArn,
               sysSubscriptionArn: subscriptionArns[0],
               lostItemSubscriptionArn: subscriptionArns[1]
