@@ -2,16 +2,17 @@ import { marshall, NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamo
 import { nanoid } from 'nanoid';
 import { ILostOrFoundItem } from "../types/lostfound-items.js";
 
-export const lostFoundItemToDDB = (data: any) => {
+export const lostFoundItemToDDB = (record: Record<string, NativeAttributeValue>) => {
+  const marshalledRecord = marshall(record);
   return {
-    id: `${data.isFoundItem ? 'Found':'Lost'}_${nanoid(15)}`,
-    publisher_email: data.publisherEmail,
-    is_found_item: data.isFoundItem,
-    contact_info: data.contactInfo,
-    lost_or_found_date: Date.now().toString(),
-    title: data.title,
-    description: data?.description,
-    images: data?.images
+    id: marshall(`${record.isFoundItem ? 'Found':'Lost'}_${nanoid(15)}`),
+    publisher_email: marshalledRecord.publisherEmail,
+    is_found_item: marshalledRecord.isFoundItem,
+    contact_info: marshalledRecord.contactInfo,
+    lost_or_found_date: marshall(Date.now().toString()),
+    title: marshalledRecord.title,
+    description: marshalledRecord?.description,
+    images: marshalledRecord?.images
   }
 };
 

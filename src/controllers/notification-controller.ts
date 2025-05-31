@@ -111,7 +111,7 @@ export class NotificationController {
           logger.debug('Getting application endpoint attributes.');
           const endpointAttributes = await this.snsService.getEndpointAttributes(existingData.endpointArn);
 
-          if(!endpointAttributes?.Attributes?.Enabled || endpointAttributes?.Attributes?.Token == deviceToken) {
+          if(!endpointAttributes?.Attributes?.Enabled || endpointAttributes?.Attributes?.Token != deviceToken) {
             
             try {
               await this.deleteApplicationEndpointAndSubscriptions(existingData);

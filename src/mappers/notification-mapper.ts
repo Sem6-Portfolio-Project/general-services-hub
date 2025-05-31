@@ -1,15 +1,17 @@
 import { marshall, NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
-import { INotificationEvent } from "../types/notification.js";
+import { nanoid } from "nanoid";
 
-export const intoToDDB = (data: INotificationEvent) => {
+export const intoToDDB = (record: Record<string, NativeAttributeValue>) => {
+  const marshalledRecord = marshall(record);
   return {
-    title: data.title,
-    description: data.description,
-    image: data?.image,
-    time_stamp: data.timeStamp,
-    type: data.type,
-    receivers: data?.receivers,
-    receiver_type: data?.receiverType
+    id: marshall(`${nanoid(15)}`),
+    title: marshalledRecord.title,
+    description: marshalledRecord.description,
+    image: marshalledRecord.image ?? null,
+    time_stamp: marshalledRecord.timeStamp ?? marshall(Date.now()),
+    type: marshalledRecord.type,
+    receivers: marshalledRecord.receivers ?? null,
+    receiver_type: marshalledRecord.receiverType ?? null
   }
 }
 

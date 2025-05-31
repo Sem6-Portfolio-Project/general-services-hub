@@ -66,8 +66,9 @@ export class LostFoundItemController {
         });
 
         Promise.all(uploadedImages);
+        logger.debug('Successfuly saved images to s3 bucket');
       }
-      logger.debug('Successfuly saved images to s3 bucket');
+      
     } catch (e) {
       logger.error('Error while uploading the images to s3 bucket: %o', e);
       failureResponse({

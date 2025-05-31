@@ -32,7 +32,7 @@ export const NOTIFICATION_TYPES = {
 export const TABLES = {
   APPLICATION_ENDPOINTS: "PlatformEndpoints",
   NOTIFICATIONS: "Notifications",
-  LOST_OR_FOUND_ITEMS: "LostOrFoundItems"
+  LOST_OR_FOUND_ITEMS: "LostAndFoundItems"
 }
 
 export const CONNECTION_TYPES = {

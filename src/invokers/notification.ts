@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Handler, SQSEvent, SQSRecord } from 'aws-lambda';
 import { createLogger, CustomLogger } from "../lib/logger.js";
 import { NotificationController } from "../controllers/notification-controller.js";
