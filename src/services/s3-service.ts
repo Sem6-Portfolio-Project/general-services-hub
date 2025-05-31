@@ -1,11 +1,13 @@
 import { 
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
+  GetObjectCommand,
   ObjectCannedACL,
   PutObjectCommand,
   PutObjectCommandOutput,
   S3Client
  } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { AwsService } from "./aws-service.js";
 
 export class S3Service extends AwsService {
@@ -63,4 +65,46 @@ export class S3Service extends AwsService {
     );
   };
 
+  /**
+   * generate document uplaod url for s3 
+   * @param bucket 
+   * @param key 
+   * @param contentType 
+   * @param expiresIn 
+   */
+  getPresignedUrlForUpload = (
+    bucket: string,
+    key: string,
+    contentType: string,
+    expiresIn: number = 300
+  ): Promise<string> => {
+    
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      ContentType: contentType
+    });
+
+    return getSignedUrl(this.client, command, { expiresIn })
+  }
+
+  /**
+   * generate download url for the s3
+   * @param bucket 
+   * @param key 
+   * @param expiresIn 
+   */
+  getPresignedUrlForDownload = (
+    bucket: string,
+    key: string,
+    expiresIn: number = 600
+  ): Promise<string> => {
+    
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    return getSignedUrl(this.client, command, { expiresIn })
+  }
 }

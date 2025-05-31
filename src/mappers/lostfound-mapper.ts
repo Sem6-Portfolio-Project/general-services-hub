@@ -11,8 +11,8 @@ export const lostFoundItemToDDB = (record: Record<string, NativeAttributeValue>)
     contact_info: marshalledRecord.contactInfo,
     lost_or_found_date: marshall(Date.now().toString()),
     title: marshalledRecord.title,
-    description: marshalledRecord?.description,
-    images: marshalledRecord?.images
+    description: marshalledRecord.description ?? null,
+    images: marshalledRecord.images ?? null
   }
 };
 

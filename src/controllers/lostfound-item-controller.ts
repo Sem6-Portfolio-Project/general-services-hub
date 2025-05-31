@@ -24,7 +24,7 @@ import { getImageAccessPubUrl } from "../utils/s3-utils.js";
 import { failureResponse, successResponse } from "../lib/response.js";
 import { injectable } from "tsyringe";
 
-const logger: CustomLogger = createLogger({fileName: 'NotificationController'});
+const logger: CustomLogger = createLogger({fileName: 'LostFoundItemController'});
 
 @injectable()
 export class LostFoundItemController {
@@ -42,53 +42,13 @@ export class LostFoundItemController {
    */
   postLostOrFoundItem = async(req: Request, res: Response) =>  {
     const data = req.body as ILostOrFoundItem;
-    const images: string[] = [];
-    try {
-      if(data?.images && data.images.length != 0) {
-        logger.debug('Uploaging images to s3 bucket');
-
-        const uploadedImages = data.images.map(async(image) => {
-           const buffer = Buffer.from(image.fileBase64, 'base64');
-           
-           await this.s3Service.uploadObject(
-            S3_BUCKETS.LOST_OR_FOUND_ITEM_IMAGES,
-            image.fileName,
-            buffer,
-            image.fileType,
-            S3_OBJECTS_ACL_POLICY.PUBLIC_READ
-           );
-
-           images.push(getImageAccessPubUrl(
-            S3_BUCKETS.LOST_OR_FOUND_ITEM_IMAGES,
-            image.fileName
-           ));
-
-        });
-
-        Promise.all(uploadedImages);
-        logger.debug('Successfuly saved images to s3 bucket');
-      }
-      
-    } catch (e) {
-      logger.error('Error while uploading the images to s3 bucket: %o', e);
-      failureResponse({
-        res,
-        status: 400,
-        body: {
-          message: 'Error while uploading the images to s3 bucket'
-        }
-      });
-    }
-
+    const images: string[] = data?.images || [];
     try {
       logger.debug(`Saving the ${data.isFoundItem ? 'found': 'lost'} item to the ddb`);
 
       await this.dynamodbService.put(
         TABLES.LOST_OR_FOUND_ITEMS,
-        lostFoundItemToDDB({
-          ...data,
-          images: images
-        })
+        lostFoundItemToDDB(data)
       );
     } catch (e) {
       logger.error(`Error while saving the ${data.isFoundItem ? 'found':'lost'} item to the ddb: %o`, e);

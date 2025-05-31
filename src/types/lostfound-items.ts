@@ -4,16 +4,15 @@ export interface IContactInfo {
   address?: string,
 }
 
-export interface IImage {
+export interface IDocument {
   fileName: string,
   fileType: string,
-  fileBase64: string
 } 
 
 export interface IItem {
   title: string,
   description?: string,
-  images?: IImage[]
+  images?: string[]
 }
 
 export interface ILostOrFoundItem extends IItem {
