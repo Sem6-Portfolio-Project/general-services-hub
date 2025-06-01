@@ -11,6 +11,7 @@ export const generateFCMNotification = (
   image?: string
 ): string => {
   const payload = {
+    default: "Default fallback message",
     GCM: JSON.stringify({
       fcmV1Message: {
         message: {

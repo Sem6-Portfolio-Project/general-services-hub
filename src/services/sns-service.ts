@@ -119,6 +119,7 @@ export class SNSService extends AwsService {
       new PublishCommand({
         TopicArn: topicArn,
         TargetArn: targetEndpointArn,
+        MessageStructure: "json",
         Message: message
       }),
       'PublishCommand'
