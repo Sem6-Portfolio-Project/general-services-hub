@@ -25,7 +25,7 @@ export class UtilsController {
     try {
       logger.debug('Generating the document uplaod the urls.')
       const results = documents.map(async(doc)=> {
-        const key = `${nanoid()}_${doc.fileName}`;
+        const key = `lost-or-found/${nanoid()}_${doc.fileName}`;
         const url = await this.s3Service.getPresignedUrlForUpload(
           S3_BUCKETS.LOST_OR_FOUND_ITEM_IMAGES,
           key,
@@ -38,11 +38,12 @@ export class UtilsController {
         }
       });
 
-      Promise.all(results);
+      const generatedUrlObjs = await Promise.all(results);
+      logger.debug('Generated urls: %s', generatedUrlObjs);
       successResponse({
         res,
         body: {
-          data: results,
+          data: generatedUrlObjs,
           message: 'Successfully generated the uplaod urls.'
         }
       })

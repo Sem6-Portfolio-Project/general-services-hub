@@ -41,7 +41,7 @@ export const CONNECTION_TYPES = {
 }
 
 export const S3_BUCKETS = {
-  LOST_OR_FOUND_ITEM_IMAGES: "LostOrFoundItemImages"
+  LOST_OR_FOUND_ITEM_IMAGES: "481665090781-customer-resources"
 }
 
 export const S3_OBJECTS_ACL_POLICY = {
