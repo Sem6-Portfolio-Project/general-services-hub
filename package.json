@@ -7,7 +7,7 @@
     "build": "tsc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Neranjan Pushpakumara",
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.149",
