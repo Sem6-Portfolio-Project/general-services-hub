@@ -3,7 +3,7 @@ export interface INotification {
   description: string,
   image?: string,
   timeStamp: string,
-  type: number
+  type?: number
 }
 
 export interface INotificationEvent extends INotification {
